@@ -33,7 +33,7 @@ const invoiceSchema = z.object({
   }),
 });
 
-type InvoiceFormData = z.infer<typeof invoiceSchema>;
+export type InvoiceFormData = z.infer<typeof invoiceSchema>;
 
 interface InvoiceFormProps {
   initialData: Partial<Invoice>;
