@@ -58,10 +58,15 @@ export default function HomePage() {
         ...extractRes.data
       });
       toast.success("Data extracted successfully.");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
+      let description = "An error occurred.";
+      if (typeof error === "object" && error !== null && "response" in error) {
+        const errObj = error as { response?: { data?: { message?: string } } };
+        description = errObj.response?.data?.message || description;
+      }
       toast.error("Extraction Failed", {
-        description: error.response?.data?.message || "An error occurred.",
+        description,
       });
     } finally {
       setIsLoading(false);
@@ -78,9 +83,14 @@ export default function HomePage() {
       setExtractedData(null);
       setFile(null);
       setFileInfo(null);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      let description = 'Could not save the invoice.';
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const errObj = error as { response?: { data?: { message?: string } } };
+        description = errObj.response?.data?.message || description;
+      }
       toast.error('Save Failed', {
-        description: error.response?.data?.message || 'Could not save the invoice.',
+        description,
       });
     }
   };
