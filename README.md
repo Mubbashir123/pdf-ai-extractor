@@ -1,135 +1,127 @@
-# Turborepo starter
+# PDF Viewer & AI Data Extraction Dashboard
 
-This Turborepo starter is maintained by the Turborepo core team.
+This is a full-stack monorepo application that allows users to upload and view PDFs, extract key invoice data using the Gemini AI, and perform full CRUD (Create, Read, Update, Delete) operations on the extracted data. This project was built as a take-home assignment for Flowbit Private Limited.
 
-## Using this example
+---
 
-Run the following command:
+## ✨ Features
 
-```sh
-npx create-turbo@latest
-```
+* **PDF Viewer:** Upload local PDFs (≤25 MB) with in-browser viewing, page navigation, and zoom.
+* **AI Data Extraction:** Uses the Google Gemini API to extract structured data from invoices.
+* **Editable Form:** All extracted data is populated into a dynamic, validated form for user correction.
+* **Full CRUD Functionality:** Create, Read, Update, and Delete invoice records.
+* **Search:** A dedicated page to list all saved invoices with a real-time search by vendor or invoice number.
+* **Secure & Robust:** Handles file storage via Vercel Blob and data persistence in MongoDB Atlas.
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+## 🛠️ Technical Stack
 
-### Apps and Packages
+* **Monorepo:** Turborepo
+* **Frontend:** Next.js (App Router), React, TypeScript, Tailwind CSS, shadcn/ui
+* **Backend:** Node.js, Express, TypeScript
+* **Database:** MongoDB Atlas
+* **AI:** Google Gemini API
+* **File Storage:** Vercel Blob
+* **Deployment:** Vercel
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+---
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## ⚙️ Local Setup
 
-### Utilities
+### Prerequisites
 
-This Turborepo has some additional tools already setup for you:
+* Node.js (v18+)
+* npm (or your preferred package manager)
+* MongoDB Atlas account
+* Google Gemini API Key
+* Vercel Account (for Blob storage token)
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+### Instructions
 
-### Build
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
+    cd your-repo-name
+    ```
 
-To build all apps and packages, run the following command:
+2.  **Install dependencies from the root directory:**
+    ```bash
+    npm install
+    ```
 
-```
-cd my-turborepo
+3.  **Set up Environment Variables:**
+    * In `apps/backend/`, create a `.env` file and add the following variables:
+        ```
+        MONGODB_URI="your_mongodb_atlas_connection_string"
+        GEMINI_API_KEY="your_gemini_api_key"
+        BLOB_READ_WRITE_TOKEN="your_vercel_blob_read_write_token"
+        ```
+    * In `apps/frontend/`, create a `.env.local` file:
+        ```
+        NEXT_PUBLIC_API_URL="http://localhost:5001"
+        ```
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
+4.  **Run the applications:**
+    ```bash
+    npm run dev
+    ```
+    * The frontend will be available at `http://localhost:3000`.
+    * The backend will be available at `http://localhost:5001`.
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
-```
+---
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+## 📝 API Documentation
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+### Base URL: `/api`
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+#### `POST /upload`
+Uploads a PDF file.
+* **Content-Type:** `multipart/form-data`
+* **Body:** `file` (the PDF file)
+* **Success Response (201):**
+    ```json
+    {
+      "fileId": "unique-file-name-with-timestamp.pdf",
+      "fileName": "original-file-name.pdf"
+    }
+    ```
 
-### Develop
+#### `POST /extract`
+Extracts data from an uploaded PDF.
+* **Body:**
+    ```json
+    {
+      "fileId": "unique-file-name-with-timestamp.pdf"
+    }
+    ```
+* **Success Response (200):**
+    ```json
+    {
+      "vendor": { "name": "...", "address": "...", "taxId": "..." },
+      "invoice": { "number": "...", "date": "...", "currency": "...", "subtotal": 0.00, "taxPercent": 0.00, "total": 0.00, "poNumber": "...", "poDate": "...", "lineItems": [] }
+    }
+    ```
 
-To develop all apps and packages, run the following command:
+#### `POST /invoices`
+Saves a new invoice record.
+* **Body:** `{...invoiceObject}`
+* **Success Response (201):** `{...savedInvoiceObject}`
 
-```
-cd my-turborepo
+#### `GET /invoices`
+Lists all saved invoices. Supports search.
+* **URL:** `/invoices?q=acme`
+* **Success Response (200):** `[ { ...invoiceObject1 }, ... ]`
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+#### `GET /invoices/:id`
+Retrieves a single invoice.
+* **Success Response (200):** `{ ...invoiceObject }`
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+#### `PUT /invoices/:id`
+Updates an existing invoice.
+* **Body:** `{...invoiceObject}`
+* **Success Response (200):** `{ ...updatedInvoiceObject }`
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+#### `DELETE /invoices/:id`
+Deletes an invoice.
+* **Success Response (200):** `{ "message": "Invoice deleted successfully" }`
