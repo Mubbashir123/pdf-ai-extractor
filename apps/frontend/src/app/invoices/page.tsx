@@ -18,27 +18,23 @@ export default function InvoicesPage() {
 
   // Debounce search term to avoid excessive API calls
   useEffect(() => {
+    const fetchInvoices = async () => {
+      setIsLoading(true);
+      try {
+        const response = await api.get(`/invoices?q=${searchTerm}`);
+        setInvoices(response.data);
+      } catch (error) {
+        console.error('Failed to fetch invoices', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     const delayDebounceFn = setTimeout(() => {
       fetchInvoices();
     }, 300);
-
-    
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]); 
-
-  // Function to fetch invoices from the backend
-  const fetchInvoices = async () => {
-    setIsLoading(true);
-    try {
-      const response = await api.get(`/invoices?q=${searchTerm}`);
-      setInvoices(response.data);
-    } catch (error) {
-      console.error('Failed to fetch invoices', error);
-      
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [searchTerm]);
 
   const formatCurrency = (amount: number | undefined, currency: string | undefined = 'USD') => {
     if (typeof amount !== 'number') return 'N/A';
