@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { Invoice } from '@repo/types';
+import { type InvoiceFormData } from '@/components/InvoiceForm';
 import api from '@/lib/api';
 import InvoiceForm from '@/components/InvoiceForm';
 
@@ -19,7 +21,7 @@ export default function HomePage() {
   const [numPages, setNumPages] = useState<number | null>(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [zoom, setZoom] = useState(1.0);
-  const [extractedData, setExtractedData] = useState<any | null>(null);
+  const [extractedData, setExtractedData] = useState<Partial<Invoice> | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +68,7 @@ export default function HomePage() {
     }
   };
   
-  const handleSave = async (data: any) => {
+  const handleSave = async (data: InvoiceFormData) => {
     try {
       await api.post('/invoices', data);
       toast.success('Invoice Saved!', {

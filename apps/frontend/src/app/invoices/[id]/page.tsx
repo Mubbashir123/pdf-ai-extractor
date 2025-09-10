@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Invoice } from '@repo/types';
+import { type InvoiceFormData } from '@/components/InvoiceForm';
 import api from '@/lib/api';
 
 import InvoiceForm from '@/components/InvoiceForm';
@@ -49,7 +50,7 @@ export default function InvoiceDetailPage() {
   }, [id]);
 
   // UPDATING
-  const handleUpdate = async (data: any) => {
+  const handleUpdate = async (data: InvoiceFormData) => {
     try {
       await api.put(`/invoices/${id}`, data);
       toast.success("Invoice updated successfully!");

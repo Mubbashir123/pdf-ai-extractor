@@ -38,7 +38,7 @@ type InvoiceFormData = z.infer<typeof invoiceSchema>;
 interface InvoiceFormProps {
   initialData: Partial<Invoice>;
   onSave: (data: InvoiceFormData) => void; 
-  isUpdating?: boolean; 
+  isUpdating?: boolean;
 }
 
 export default function InvoiceForm({ initialData, onSave, isUpdating = false }: InvoiceFormProps) {
