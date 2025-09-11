@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Document, Page, pdfjs } from 'react-pdf';
+import dynamic from 'next/dynamic';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
@@ -13,7 +13,15 @@ import { type InvoiceFormData } from '@/components/InvoiceForm';
 import api from '@/lib/api';
 import InvoiceForm from '@/components/InvoiceForm';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.mjs`;
+const PdfViewer = dynamic(() => import('@/components/PdfViewer'), { ssr: false }) as unknown as React.ComponentType<{
+  file: File | null;
+  pageNumber: number;
+  numPages: number | null;
+  zoom: number;
+  setPageNumber: (page: number) => void;
+  setNumPages: (pages: number) => void;
+  setZoom: (zoom: number) => void;
+}>;
 
 export default function HomePage() {
   const [file, setFile] = useState<File | null>(null);
@@ -114,21 +122,15 @@ export default function HomePage() {
             <CardContent>
               <Input type="file" accept="application/pdf" onChange={handleFileChange} className="mb-4" disabled={!!extractedData} />
               {file && (
-                <div className="border rounded-lg bg-gray-100 p-2">
-                  <div className="flex items-center justify-center gap-4 p-2 bg-white rounded-md shadow-sm mb-2">
-                    <Button onClick={() => setPageNumber(p => Math.max(p - 1, 1))} disabled={pageNumber <= 1}>Prev</Button>
-                    <span>Page {pageNumber} of {numPages}</span>
-                    <Button onClick={() => setPageNumber(p => Math.min(p + 1, numPages!))} disabled={pageNumber >= numPages!}>Next</Button>
-                    <Separator orientation="vertical" className="h-6" />
-                    <Button onClick={() => setZoom(z => z + 0.2)}>Zoom In</Button>
-                    <Button onClick={() => setZoom(z => Math.max(z - 0.2, 0.5))}>Zoom Out</Button>
-                  </div>
-                  <div className="overflow-auto h-[60vh]">
-                    <Document file={file} onLoadSuccess={onDocumentLoadSuccess}>
-                      <Page pageNumber={pageNumber} scale={zoom} />
-                    </Document>
-                  </div>
-                </div>
+                <PdfViewer
+                  file={file}
+                  pageNumber={pageNumber}
+                  numPages={numPages}
+                  zoom={zoom}
+                  setPageNumber={(p) => setPageNumber(p)}
+                  setNumPages={(n) => setNumPages(n)}
+                  setZoom={(z) => setZoom(z)}
+                />
               )}
             </CardContent>
           </Card>
