@@ -11,23 +11,7 @@ const PORT = process.env.PORT || 5001;
 
 connectDB();
 
-const allowedOrigins = [
-  process.env.FRONTEND_ORIGIN || 'http://localhost:3000',
-  'https://pdf-ai-extractor-frontend.vercel.app',
-];
-
-const corsOptions: cors.CorsOptions = {
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(null, true);
-  },
-  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-};
-
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 // API Routes
