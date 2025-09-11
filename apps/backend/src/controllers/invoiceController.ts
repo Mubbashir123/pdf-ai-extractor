@@ -112,7 +112,7 @@ export const deleteInvoice = async (req: Request, res: Response) => {
   try {
     const deletedInvoice = await InvoiceModel.findByIdAndDelete(req.params.id);
     if (!deletedInvoice) {
-      return res.status(4404).json({ message: 'Invoice not found' });
+      return res.status(404).json({ message: 'Invoice not found' });
     }
     // To enable file deletion from Blob storage
     // await del(deletedInvoice.fileId); 
