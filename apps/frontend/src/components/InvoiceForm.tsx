@@ -28,7 +28,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-// ---------------- Schema ----------------
+
 const lineItemSchema = z.object({
   description: z.string().min(1, 'Description is required'),
   quantity: z.coerce.number().min(0, 'Quantity must be positive'),
@@ -51,17 +51,17 @@ const invoiceSchema = z.object({
   }),
 });
 
-// ✅ Schema type
+
  export type InvoiceFormData = z.infer<typeof invoiceSchema>;
 
-// ---------------- Props ----------------
+
 interface InvoiceFormProps {
   initialData: Partial<InvoiceFormData>;
   onSave: (data: InvoiceFormData) => void;
   isUpdating?: boolean;
 }
 
-// ---------------- Component ----------------
+
 export default function InvoiceForm({
   initialData,
   onSave,
