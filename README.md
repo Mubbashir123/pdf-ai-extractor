@@ -1,6 +1,6 @@
 # PDF Viewer & AI Data Extraction Dashboard
 
-This is a full-stack monorepo application that allows users to upload and view PDFs, extract key invoice data using the Gemini AI, and perform full CRUD (Create, Read, Update, Delete) operations on the extracted data. This project was built as a take-home assignment for Flowbit Private Limited.
+This is a full-stack monorepo application that allows users to upload and view PDFs, extract key invoice data using the Gemini AI, and perform full CRUD (Create, Read, Update, Delete) operations on the extracted data.
 
 ---
 
